@@ -217,16 +217,24 @@
             <div class="corner-crosshair crosshair-br"></div>
 
             <div class="portrait-frame" id="about-portrait-frame">
-              <img src="assets/images/nithin-portrait.jpg" alt="Nithin Johnson - Studio Poster" class="portrait-image portrait-view-poster active" id="portrait-img-poster" loading="lazy">
-              <img src="assets/images/nithin-profile-vision.jpg" alt="Nithin Johnson - Editorial Vision" class="portrait-image portrait-view-vision" id="portrait-img-vision" loading="lazy">
-              <img src="assets/images/nithin-spiderman-suit.jpg" alt="Nithin Johnson - Friendly Neighborhood Designer" class="portrait-image portrait-view-suit" id="portrait-img-suit" loading="lazy">
+              <img src="assets/images/nithin-portrait.jpg" alt="Nithin Johnson - Studio Poster" class="portrait-image portrait-view-poster active" id="portrait-img-poster" loading="eager" fetchpriority="high">
+              <img src="assets/images/nithin-profile-vision.jpg" alt="Nithin Johnson - Editorial Vision" class="portrait-image portrait-view-vision" id="portrait-img-vision" loading="eager">
+              <img src="assets/images/nithin-spiderman-suit.jpg" alt="Nithin Johnson - Friendly Neighborhood Designer" class="portrait-image portrait-view-suit" id="portrait-img-suit" loading="eager">
               
-              <!-- Automatic 10-Second Slider Indicators -->
-              <div class="portrait-slide-indicators" aria-hidden="true" title="Auto-switches every 10 seconds">
-                <span class="portrait-slide-dot active"></span>
-                <span class="portrait-slide-dot"></span>
-                <span class="portrait-slide-dot"></span>
+              <!-- Automatic 10-Second Slider Indicators & Touch Dots -->
+              <div class="portrait-slide-indicators" aria-label="Portrait Slides" title="Auto-switches every 10 seconds">
+                <button type="button" class="portrait-slide-dot active" aria-label="Slide 1: Studio Graphic Poster"></button>
+                <button type="button" class="portrait-slide-dot" aria-label="Slide 2: Editorial Vision Portrait"></button>
+                <button type="button" class="portrait-slide-dot" aria-label="Slide 3: Friendly Neighborhood Designer"></button>
               </div>
+
+              <!-- Sleek Mobile & Desktop Touch/Click Navigation Arrows -->
+              <button type="button" class="portrait-nav-arrow portrait-nav-prev" id="portrait-prev-btn" aria-label="Previous Slide">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <button type="button" class="portrait-nav-arrow portrait-nav-next" id="portrait-next-btn" aria-label="Next Slide">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
 
               <div class="portrait-caption">
                 <div class="portrait-name">NITHIN JOHNSON</div>

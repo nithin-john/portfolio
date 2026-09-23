@@ -255,11 +255,14 @@ class App {
   }
 
   setupPortraitSlider() {
+    const frame = document.getElementById('about-portrait-frame');
     const posterImg = document.getElementById('portrait-img-poster');
     const visionImg = document.getElementById('portrait-img-vision');
     const suitImg = document.getElementById('portrait-img-suit');
     const dots = document.querySelectorAll('.portrait-slide-dot');
     const roleText = document.getElementById('portrait-role-text');
+    const prevBtn = document.getElementById('portrait-prev-btn');
+    const nextBtn = document.getElementById('portrait-next-btn');
 
     if (!posterImg || !visionImg) return;
 
@@ -284,11 +287,83 @@ class App {
       if (roleText) roleText.textContent = roles[currentIndex] || roles[0];
     };
 
-    // Automatic switch every 10 seconds (10000ms) with zero manual interaction needed
-    this.portraitSliderInterval = setInterval(() => {
-      const nextIdx = (currentIndex + 1) % images.length;
-      switchSlide(nextIdx);
-    }, 10000);
+    const resetAutoPlay = () => {
+      if (this.portraitSliderInterval) {
+        clearInterval(this.portraitSliderInterval);
+      }
+      this.portraitSliderInterval = setInterval(() => {
+        const nextIdx = (currentIndex + 1) % images.length;
+        switchSlide(nextIdx);
+      }, 10000);
+    };
+
+    // Interactive Dot Navigation
+    dots.forEach((dot, idx) => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        switchSlide(idx);
+        resetAutoPlay();
+      });
+    });
+
+    // Prev / Next Arrows
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const prevIdx = (currentIndex - 1 + images.length) % images.length;
+        switchSlide(prevIdx);
+        resetAutoPlay();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nextIdx = (currentIndex + 1) % images.length;
+        switchSlide(nextIdx);
+        resetAutoPlay();
+      });
+    }
+
+    // Mobile Touch Swipe Gestures
+    if (frame) {
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+
+      frame.addEventListener('touchstart', (e) => {
+        if (!e.changedTouches || e.changedTouches.length === 0) return;
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      frame.addEventListener('touchend', (e) => {
+        if (!e.changedTouches || e.changedTouches.length === 0) return;
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        // Minimum swipe distance of 35px, primarily horizontal
+        if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+          if (diffX < 0) {
+            // Swiped left -> next slide
+            const nextIdx = (currentIndex + 1) % images.length;
+            switchSlide(nextIdx);
+          } else {
+            // Swiped right -> prev slide
+            const prevIdx = (currentIndex - 1 + images.length) % images.length;
+            switchSlide(prevIdx);
+          }
+          resetAutoPlay();
+        }
+      }, { passive: true });
+    }
+
+    // Start autonomous 10-second timer
+    resetAutoPlay();
   }
 
   handlePreloader() {

@@ -465,11 +465,14 @@ body.cursor-cyan .cursor-dot {
 /* Portrait Card with Spider-Man Duotone Border */
 .portrait-card-wrapper {
   position: relative;
+  width: 100%;
+  max-width: 480px;
   border-radius: 20px;
   padding: 12px;
   background: linear-gradient(145deg, rgba(225, 6, 0, 0.25), rgba(37, 99, 235, 0.25), rgba(15, 17, 26, 0.9));
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(225, 6, 0, 0.15);
   transition: transform 0.5s var(--ease-cinematic);
+  box-sizing: border-box;
 }
 
 .portrait-card-wrapper:hover {
@@ -479,15 +482,18 @@ body.cursor-cyan .cursor-dot {
 
 .portrait-frame {
   position: relative;
+  width: 100%;
   border-radius: 14px;
   overflow: hidden;
   aspect-ratio: 4/5;
+  min-height: clamp(340px, 75vw, 520px);
   background-color: var(--bg-surface);
 }
 
 .portrait-image {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -516,7 +522,7 @@ body.cursor-cyan .cursor-dot {
 }
 
 /* -------------------------------------------------------------
- * 10-SECOND AUTOMATIC PORTRAIT SLIDER INDICATORS
+ * 10-SECOND AUTOMATIC PORTRAIT SLIDER INDICATORS & ARROWS
  * ----------------------------------------------------------- */
 .portrait-slide-indicators {
   position: absolute;
@@ -532,21 +538,70 @@ body.cursor-cyan .cursor-dot {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(0, 210, 255, 0.3);
   border-radius: 999px;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .portrait-slide-dot {
   width: 16px;
-  height: 3px;
+  height: 4px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.25);
-  transition: all 0.5s var(--ease-cinematic);
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.4s var(--ease-cinematic);
+}
+
+.portrait-slide-dot:hover {
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .portrait-slide-dot.active {
   width: 26px;
   background: var(--spider-cyan);
   box-shadow: 0 0 10px var(--spider-cyan);
+}
+
+/* Prev / Next Navigation Arrows */
+.portrait-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(5, 5, 8, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s var(--ease-cinematic);
+  opacity: 0.8;
+}
+
+.portrait-nav-prev {
+  left: 0.75rem;
+}
+
+.portrait-nav-next {
+  right: 0.75rem;
+}
+
+.portrait-nav-arrow:hover,
+.portrait-nav-arrow:focus-visible {
+  opacity: 1;
+  background: rgba(225, 6, 0, 0.85);
+  border-color: var(--spider-red);
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 0 15px var(--spider-red-glow);
 }
 
 .portrait-card-wrapper:hover .portrait-image.active {
