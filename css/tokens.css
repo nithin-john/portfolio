@@ -1,0 +1,77 @@
+/**
+ * NITHIN JOHNSON - DESIGN TOKENS
+ * Spider-Man Inspired Visual Identity + Premium Product Designer Palette
+ */
+
+:root {
+  /* Color System */
+  --bg-deep: #050508;
+  --bg-surface: #0a0b12;
+  --bg-card: rgba(14, 18, 30, 0.52);
+  --bg-card-hover: rgba(22, 28, 48, 0.68);
+  --bg-glass: rgba(12, 15, 26, 0.55);
+  --bg-glass-elevated: rgba(18, 24, 42, 0.75);
+  --apple-glass-blur: blur(28px) saturate(190%) contrast(105%);
+  --apple-glass-border: 1px solid rgba(255, 255, 255, 0.14);
+  --apple-glass-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 20px 45px rgba(0, 0, 0, 0.55);
+
+  /* Spider-Man Palette */
+  --spider-red: #E10600;
+  --spider-red-glow: rgba(225, 6, 0, 0.45);
+  --spider-red-subtle: rgba(225, 6, 0, 0.12);
+  --spider-crimson: #990000;
+  --spider-dark-red: #580507;
+  
+  --spider-blue: #1E3A8A;
+  --spider-blue-deep: #161A3A;
+  --spider-blue-electric: #2563EB;
+  --spider-cyan: #00D2FF;
+  --spider-cyan-glow: rgba(0, 210, 255, 0.35);
+
+  /* Neutral Typography & Borders */
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-red: rgba(225, 6, 0, 0.35);
+  --border-blue: rgba(37, 99, 235, 0.35);
+  --border-cyan: rgba(0, 210, 255, 0.4);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Typography Scales (Fluid Clamps) */
+  --text-giant: clamp(3.2rem, 9.5vw, 9.5rem);
+  --text-h1: clamp(2.4rem, 5.5vw, 5.5rem);
+  --text-h2: clamp(1.8rem, 3.8vw, 3.6rem);
+  --text-h3: clamp(1.3rem, 2.2vw, 2.2rem);
+  --text-lead: clamp(1.1rem, 1.4vw, 1.4rem);
+  --text-body: 1.05rem;
+  --text-sm: 0.9rem;
+  --text-xs: 0.75rem;
+
+  /* Spacing */
+  --section-pad-y: clamp(3.2rem, 5.5vw, 6rem);
+  --container-max: 1440px;
+  --container-pad: clamp(1.25rem, 4vw, 4rem);
+
+  /* Transitions & Timing */
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 0.25s;
+  --duration-normal: 0.45s;
+  --duration-slow: 0.85s;
+
+  /* Z-Index Layers */
+  --z-canvas-bg: 0;
+  --z-content: 10;
+  --z-nav: 100;
+  --z-modal: 500;
+  --z-cursor: 9999;
+}

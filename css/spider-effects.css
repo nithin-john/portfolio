@@ -1,0 +1,176 @@
+/**
+ * NITHIN JOHNSON - SPIDER-MAN EFFECTS & CINEMATIC MOTIFS
+ * Abstract, Sophisticated, High-Tech Web Geometry & Chromatic Lighting
+ */
+
+/* Spider-Sense Synaptic Pulse Keyframes */
+@keyframes spiderSensePulse {
+  0% {
+    box-shadow: 0 0 6px var(--spider-red), 0 0 14px rgba(225, 6, 0, 0.4);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 14px var(--spider-red), 0 0 28px rgba(225, 6, 0, 0.75);
+    transform: scale(1.15);
+  }
+}
+
+@keyframes spiderCyanGlow {
+  0% {
+    box-shadow: 0 0 8px var(--spider-cyan-glow);
+  }
+  100% {
+    box-shadow: 0 0 22px var(--spider-cyan-glow), 0 0 45px rgba(0, 210, 255, 0.2);
+  }
+}
+
+/* Subtle Geometric Web Wireframe Background Layer */
+.spider-web-mesh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(225, 6, 0, 0.04) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 60px 60px, 60px 60px;
+  background-position: center center;
+  opacity: 0.7;
+}
+
+/* Laser Strand Section Dividers */
+.laser-divider {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(225, 6, 0, 0.4) 30%, rgba(0, 210, 255, 0.5) 70%, transparent 100%);
+  margin: clamp(0.75rem, 2vw, 1.75rem) 0;
+}
+
+.laser-divider::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 140px;
+  height: 3px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, var(--spider-cyan) 0%, transparent 80%);
+  filter: blur(2px);
+}
+
+/* Abstract Spider-Sense Radar Ring */
+.spider-sense-radar {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  border: 1px dashed rgba(225, 6, 0, 0.2);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: radarRotate 40s linear infinite;
+}
+
+@keyframes radarRotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Chromatic Aberration Text Filter for Interactive Elements */
+.chromatic-hover:hover {
+  text-shadow: -2px 0 var(--spider-red), 2px 0 var(--spider-cyan);
+  transition: text-shadow 0.15s ease;
+}
+
+/* High-Tech Glowing Card Accent */
+.cyber-card-glow {
+  position: relative;
+}
+
+.cyber-card-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(225, 6, 0, 0.35) 0%, transparent 50%, rgba(0, 210, 255, 0.3) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.cyber-card-glow:hover::after {
+  opacity: 1;
+}
+
+/* -------------------------------------------------------------
+ * FULL-SCREEN SPIDER-MAN SCROLL SWINGER COMPANION
+ * ----------------------------------------------------------- */
+#spiderman-swinger-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 92;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.spidey-fullscreen-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.spidey-full-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+#spidey-avatar {
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  transition: filter 0.2s ease;
+}
+
+#spidey-avatar:hover {
+  filter: drop-shadow(0 0 16px var(--spider-red-glow)) drop-shadow(0 0 25px var(--spider-cyan-glow)) !important;
+}
+
+.spidey-hover-pill {
+  position: absolute;
+  transform: translateX(-50%);
+  background: rgba(10, 14, 25, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-cyan);
+  color: var(--spider-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.3);
+}
+
+.spidey-hover-pill.visible {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  #spidey-avatar {
+    transform: scale(0.8);
+  }
+}
+
+
