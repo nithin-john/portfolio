@@ -1,7 +1,11 @@
 /**
  * NITHIN JOHNSON - SPIDER-MAN SOUND & CINEMATIC THEME ENGINE
- * Plays the modern Spider-Man theme background music (default ON with gesture autoplay)
- * and synthesizes the iconic web-shooter "THWIP!" and aerodynamic swing "WHOOSH!".
+ * - ON BY DEFAULT: Audio is enabled and starts playing automatically in the background.
+ * - Persistent "ON" State: Button always shows active/ON by default (never reverts to OFF unless clicked).
+ * - Single-Click Toggle: Click the nav button once to turn OFF; click again to turn ON.
+ * - Trimmed Audio: Starts right away with the energetic build-up and heroic fanfare.
+ * - Continuous Background Playback: Seamless infinite background loop.
+ * - Audible Spider-Man web-shooter "THWIP!" and aerodynamic "WHOOSH!" swing effects.
  */
 
 export class SoundEffects {
@@ -9,30 +13,49 @@ export class SoundEffects {
     this.toggleBtn = document.getElementById(toggleBtnId);
     this.audioCtx = null;
     this.noiseBuffer = null;
+    this.sfxGain = null;
 
-    // Enabled by default on initial page load as requested!
+    // Cinematic volume
+    this.THEME_VOLUME = 0.40;
+
+    // Audio is ON by default
     this.isEnabled = true;
-    this.hasUserInteracted = false;
 
-    // Audio Element for the modern Spider-Man Theme Song
+    // Modern Spider-Man Theme Audio Element
     this.themeAudio = document.getElementById('spiderman-theme-audio');
     if (!this.themeAudio) {
       this.themeAudio = new Audio('assets/audio/spiderman-theme.mp3');
       this.themeAudio.id = 'spiderman-theme-audio';
+      this.themeAudio.autoplay = true;
       this.themeAudio.loop = true;
+      this.themeAudio.preload = 'auto';
       document.body.appendChild(this.themeAudio);
+    } else {
+      this.themeAudio.autoplay = true;
+      this.themeAudio.loop = true;
+      this.themeAudio.preload = 'auto';
     }
-    this.themeAudio.loop = true;
-    this.themeAudio.volume = 0.28; // Tasteful, balanced ambient level
+    this.themeAudio.volume = this.THEME_VOLUME;
 
-    // Expose instance globally for SpidermanSwinger and UI modules
+    // Continuous loop safeguard
+    this.themeAudio.addEventListener('ended', () => {
+      if (this.isEnabled) {
+        this.themeAudio.currentTime = 0;
+        this.themeAudio.play().catch(() => {});
+      }
+    });
+
+    // Button UI starts in the ACTIVE (ON) state
+    this.updateButtonUI(true);
+
+    // Global reference for SpidermanSwinger and UI interactions
     window.soundEffectsInstance = this;
 
     this.init();
   }
 
   init() {
-    // 1. Hook toggle button click
+    // 1. Single-click toggle: If ON -> turn OFF; If OFF -> turn ON
     if (this.toggleBtn) {
       this.toggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -40,11 +63,13 @@ export class SoundEffects {
       });
     }
 
-    // 2. Attempt immediate play, or register gesture listener for browser autoplay policy
+    // 2. Start theme audio immediately
     this.startTheme();
+
+    // 3. Attach ambient gesture listeners for immediate playback on first interaction
     this.setupAutoplayGestureTriggers();
 
-    // 3. UI interaction tones
+    // 4. Subtle UI interaction feedback tones
     document.querySelectorAll('a, button, .project-card, .deck-screen-card, .art-masonry-item').forEach(el => {
       el.addEventListener('mouseenter', () => {
         if (this.isEnabled) this.playHoverTone();
@@ -56,30 +81,33 @@ export class SoundEffects {
   }
 
   /**
-   * Browser Autoplay Policy Handler:
-   * Modern browsers block unmuted audio until the user touches, scrolls, or clicks anything.
-   * We listen on window for the very first user gesture and immediately kick off audio!
+   * Browser Autoplay Compliance:
+   * Modern browsers require an initial user gesture before playing unmuted audio.
+   * We listen on window & document for any user gesture (tap, click, scroll, key, wheel)
+   * to immediately start the theme without requiring the user to click the sound button!
    */
   setupAutoplayGestureTriggers() {
-    const onFirstGesture = () => {
-      this.hasUserInteracted = true;
+    const onUserInteraction = () => {
       if (this.isEnabled) {
         this.ensureContext();
         if (this.themeAudio && this.themeAudio.paused) {
+          this.themeAudio.volume = this.THEME_VOLUME;
           this.themeAudio.play().then(() => {
             this.updateButtonUI(true);
           }).catch(() => {});
         }
       }
-
-      // Remove one-time listeners once triggered
-      ['click', 'touchstart', 'scroll', 'wheel', 'keydown'].forEach(evt => {
-        window.removeEventListener(evt, onFirstGesture, { capture: true });
-      });
     };
 
-    ['click', 'touchstart', 'scroll', 'wheel', 'keydown'].forEach(evt => {
-      window.addEventListener(evt, onFirstGesture, { capture: true, once: true });
+    const events = [
+      'pointerdown', 'pointerup', 'mousedown', 'mouseup',
+      'touchstart', 'touchend', 'click', 'keydown',
+      'wheel', 'scroll'
+    ];
+
+    events.forEach(evt => {
+      window.addEventListener(evt, onUserInteraction, { capture: true, passive: true });
+      document.addEventListener(evt, onUserInteraction, { capture: true, passive: true });
     });
   }
 
@@ -90,7 +118,7 @@ export class SoundEffects {
         this.audioCtx = new AudioContext();
 
         this.sfxGain = this.audioCtx.createGain();
-        this.sfxGain.gain.setValueAtTime(0.85, this.audioCtx.currentTime);
+        this.sfxGain.gain.setValueAtTime(0.95, this.audioCtx.currentTime);
         this.sfxGain.connect(this.audioCtx.destination);
 
         this.generateNoiseBuffer();
@@ -113,51 +141,73 @@ export class SoundEffects {
     this.noiseBuffer = buffer;
   }
 
+  /**
+   * Start playback automatically in the background
+   */
   startTheme() {
     if (!this.isEnabled || !this.themeAudio) return;
 
-    this.themeAudio.volume = 0.28;
-    const playPromise = this.themeAudio.play();
+    this.ensureContext();
+    this.themeAudio.volume = this.THEME_VOLUME;
 
+    // If already playing, keep UI active
+    if (!this.themeAudio.paused) {
+      this.updateButtonUI(true);
+      return;
+    }
+
+    const playPromise = this.themeAudio.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
         this.updateButtonUI(true);
       }).catch(() => {
-        // Autoplay policy prevented immediate playback without user interaction yet;
-        // The one-time listener in setupAutoplayGestureTriggers will play on first click/scroll!
-        this.updateButtonUI(true); // Keep active state ready
+        // Autoplay policy deferred until first gesture.
+        // Keep UI showing ON (active) because audio is enabled by default!
+        this.updateButtonUI(true);
       });
     }
   }
 
+  /**
+   * Stop background theme smoothly
+   */
   stopTheme() {
     if (!this.themeAudio) return;
 
-    // Smooth volume fade out before pausing
     let currentVol = this.themeAudio.volume;
     const fadeInterval = setInterval(() => {
-      currentVol -= 0.05;
-      if (currentVol <= 0.02) {
+      currentVol -= 0.08;
+      if (currentVol <= 0.05) {
         clearInterval(fadeInterval);
         this.themeAudio.pause();
-        this.themeAudio.volume = 0.28; // reset for next resume
+        this.themeAudio.volume = this.THEME_VOLUME;
       } else {
         this.themeAudio.volume = currentVol;
       }
-    }, 40);
+    }, 25);
   }
 
+  /**
+   * Single-click toggle handler:
+   * - If audio is currently ON: clicking turns it OFF.
+   * - If audio is currently OFF: clicking turns it ON.
+   */
   toggleSound() {
     this.ensureContext();
-    this.isEnabled = !this.isEnabled;
 
-    if (this.isEnabled) {
+    const isPlaying = this.themeAudio && !this.themeAudio.paused;
+
+    if (isPlaying) {
+      // Audio is currently playing -> Turn it OFF
+      this.isEnabled = false;
+      this.stopTheme();
+      this.updateButtonUI(false);
+    } else {
+      // Audio is currently paused/stopped -> Turn it ON immediately
+      this.isEnabled = true;
       this.startTheme();
       this.playActivateChime();
       this.updateButtonUI(true);
-    } else {
-      this.stopTheme();
-      this.updateButtonUI(false);
     }
   }
 
@@ -172,7 +222,7 @@ export class SoundEffects {
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
       `;
-      this.toggleBtn.title = 'Spider-Man Theme & Audio: ON (Click to Mute)';
+      this.toggleBtn.title = 'Spider-Man Theme & Audio: ON (Click to Turn Off)';
     } else {
       this.toggleBtn.innerHTML = `
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -181,13 +231,14 @@ export class SoundEffects {
           <line x1="17" y1="9" x2="23" y2="15"></line>
         </svg>
       `;
-      this.toggleBtn.title = 'Spider-Man Theme & Audio: OFF (Click to Play)';
+      this.toggleBtn.title = 'Spider-Man Theme & Audio: OFF (Click to Turn On)';
     }
   }
 
   /**
    * Spider-Man Web Shoot & Aerodynamic Swing Sound ("THWIP! WHOOSH!")
-   * Triggered whenever Spider-Man swings across anchors or scroll velocity surges
+   * High-gain, clearly audible mechanical snap and wind rush.
+   * Completely silenced when user turns sound off (`this.isEnabled === false`).
    */
   playWebSwing(velocity = 5) {
     if (!this.isEnabled) return;
@@ -195,24 +246,24 @@ export class SoundEffects {
     if (!this.audioCtx) return;
 
     const now = this.audioCtx.currentTime;
-    const intensity = Math.min(1.4, Math.max(0.7, velocity / 10));
+    const intensity = Math.min(1.6, Math.max(0.8, velocity / 8));
 
-    // 1. THE WEB-SHOOT "THWIP!"
+    // 1. THE WEB-SHOOT SNAP ("THWIP!")
     const thwipOsc = this.audioCtx.createOscillator();
     const thwipFilter = this.audioCtx.createBiquadFilter();
     const thwipGain = this.audioCtx.createGain();
 
     thwipOsc.type = 'sawtooth';
-    thwipOsc.frequency.setValueAtTime(2600, now);
-    thwipOsc.frequency.exponentialRampToValueAtTime(420, now + 0.08);
+    thwipOsc.frequency.setValueAtTime(2800, now);
+    thwipOsc.frequency.exponentialRampToValueAtTime(380, now + 0.08);
 
     thwipFilter.type = 'bandpass';
-    thwipFilter.frequency.setValueAtTime(3200, now);
-    thwipFilter.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+    thwipFilter.frequency.setValueAtTime(3400, now);
+    thwipFilter.frequency.exponentialRampToValueAtTime(650, now + 0.08);
     thwipFilter.Q.setValueAtTime(4.5, now);
 
-    thwipGain.gain.setValueAtTime(0.22 * intensity, now);
-    thwipGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+    thwipGain.gain.setValueAtTime(0.42 * intensity, now);
+    thwipGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.085);
 
     thwipOsc.connect(thwipFilter);
     thwipFilter.connect(thwipGain);
@@ -229,11 +280,11 @@ export class SoundEffects {
 
       hissSource.buffer = this.noiseBuffer;
       hissFilter.type = 'bandpass';
-      hissFilter.frequency.setValueAtTime(2000, now);
-      hissFilter.frequency.exponentialRampToValueAtTime(850, now + 0.07);
-      hissFilter.Q.setValueAtTime(3, now);
+      hissFilter.frequency.setValueAtTime(2200, now);
+      hissFilter.frequency.exponentialRampToValueAtTime(750, now + 0.07);
+      hissFilter.Q.setValueAtTime(3.2, now);
 
-      hissGain.gain.setValueAtTime(0.15 * intensity, now);
+      hissGain.gain.setValueAtTime(0.32 * intensity, now);
       hissGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
 
       hissSource.connect(hissFilter);
@@ -244,9 +295,9 @@ export class SoundEffects {
       hissSource.stop(now + 0.08);
     }
 
-    // 2. THE AERODYNAMIC "WHOOSH" (Air velocity rush as Spidey arcs through space)
-    const whooshStartTime = now + 0.03;
-    const whooshDuration = 0.36;
+    // 2. THE AERODYNAMIC AIR CUT ("WHOOSH!")
+    const whooshStartTime = now + 0.02;
+    const whooshDuration = 0.40;
 
     if (this.noiseBuffer) {
       const windSource = this.audioCtx.createBufferSource();
@@ -256,11 +307,11 @@ export class SoundEffects {
       windSource.buffer = this.noiseBuffer;
       windFilter.type = 'lowpass';
       windFilter.frequency.setValueAtTime(320, whooshStartTime);
-      windFilter.frequency.linearRampToValueAtTime(1100 * intensity, whooshStartTime + (whooshDuration * 0.4));
-      windFilter.frequency.exponentialRampToValueAtTime(380, whooshStartTime + whooshDuration);
+      windFilter.frequency.linearRampToValueAtTime(1400 * intensity, whooshStartTime + (whooshDuration * 0.4));
+      windFilter.frequency.exponentialRampToValueAtTime(340, whooshStartTime + whooshDuration);
 
       windGain.gain.setValueAtTime(0.001, whooshStartTime);
-      windGain.gain.linearRampToValueAtTime(0.18 * intensity, whooshStartTime + (whooshDuration * 0.35));
+      windGain.gain.linearRampToValueAtTime(0.36 * intensity, whooshStartTime + (whooshDuration * 0.35));
       windGain.gain.exponentialRampToValueAtTime(0.0001, whooshStartTime + whooshDuration);
 
       windSource.connect(windFilter);
@@ -276,10 +327,10 @@ export class SoundEffects {
     const bodyGain = this.audioCtx.createGain();
 
     bodyOsc.type = 'sine';
-    bodyOsc.frequency.setValueAtTime(220, whooshStartTime);
-    bodyOsc.frequency.exponentialRampToValueAtTime(75, whooshStartTime + whooshDuration);
+    bodyOsc.frequency.setValueAtTime(260, whooshStartTime);
+    bodyOsc.frequency.exponentialRampToValueAtTime(65, whooshStartTime + whooshDuration);
 
-    bodyGain.gain.setValueAtTime(0.15 * intensity, whooshStartTime);
+    bodyGain.gain.setValueAtTime(0.30 * intensity, whooshStartTime);
     bodyGain.gain.exponentialRampToValueAtTime(0.0001, whooshStartTime + whooshDuration);
 
     bodyOsc.connect(bodyGain);
@@ -303,7 +354,7 @@ export class SoundEffects {
     this.playWebSwing(14);
 
     // Ascending Spider-Sense acrobatic chime
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    const notes = [523.25, 659.25, 783.99, 1046.50];
     notes.forEach((freq, idx) => {
       const osc = this.audioCtx.createOscillator();
       const gain = this.audioCtx.createGain();
@@ -312,7 +363,7 @@ export class SoundEffects {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, t);
 
-      gain.gain.setValueAtTime(0.07, t);
+      gain.gain.setValueAtTime(0.10, t);
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
 
       osc.connect(gain);
@@ -332,7 +383,7 @@ export class SoundEffects {
     osc.frequency.setValueAtTime(480, this.audioCtx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(640, this.audioCtx.currentTime + 0.08);
 
-    gain.gain.setValueAtTime(0.015, this.audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.02, this.audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.08);
 
     osc.connect(gain);
@@ -351,7 +402,7 @@ export class SoundEffects {
     osc.frequency.setValueAtTime(220, this.audioCtx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(880, this.audioCtx.currentTime + 0.12);
 
-    gain.gain.setValueAtTime(0.04, this.audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.06, this.audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.12);
 
     osc.connect(gain);
@@ -372,7 +423,7 @@ export class SoundEffects {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.035, startTime);
+      gain.gain.setValueAtTime(0.05, startTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.2);
 
       osc.connect(gain);

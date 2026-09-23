@@ -486,15 +486,70 @@ body.cursor-cyan .cursor-dot {
 }
 
 .portrait-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 18%;
   filter: contrast(1.08) saturate(1.1);
-  transition: transform 0.7s var(--ease-cinematic), filter 0.5s ease;
+  transition: opacity 0.8s var(--ease-cinematic), transform 1.0s var(--ease-cinematic), filter 0.6s ease;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.02);
 }
 
-.portrait-card-wrapper:hover .portrait-image {
+.portrait-image.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.portrait-view-vision {
+  object-position: center 22%;
+  filter: contrast(1.12) grayscale(100%);
+}
+
+.portrait-view-suit {
+  object-position: center 14%;
+  filter: contrast(1.08) saturate(1.1);
+}
+
+/* -------------------------------------------------------------
+ * 10-SECOND AUTOMATIC PORTRAIT SLIDER INDICATORS
+ * ----------------------------------------------------------- */
+.portrait-slide-indicators {
+  position: absolute;
+  top: 1.15rem;
+  right: 1.15rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.65rem;
+  background: rgba(5, 5, 8, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.portrait-slide-dot {
+  width: 16px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.5s var(--ease-cinematic);
+}
+
+.portrait-slide-dot.active {
+  width: 26px;
+  background: var(--spider-cyan);
+  box-shadow: 0 0 10px var(--spider-cyan);
+}
+
+.portrait-card-wrapper:hover .portrait-image.active {
   transform: scale(1.04);
 }
 
@@ -1885,6 +1940,89 @@ body.cursor-cyan .cursor-dot {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+/* -------------------------------------------------------------
+ * SIGNATURE PORTRAIT & OUTSIDE BUTTONS (CONTACT SECTION)
+ * ----------------------------------------------------------- */
+.contact-portrait-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-portrait-frame {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 210, 255, 0.08);
+  transition: transform 0.4s var(--ease-cinematic), box-shadow 0.4s var(--ease-cinematic), border-color 0.4s ease;
+}
+
+.contact-portrait-frame:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 210, 255, 0.4);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 210, 255, 0.18);
+}
+
+.contact-full-portrait-img {
+  width: 100%;
+  aspect-ratio: 1024 / 781;
+  object-fit: cover;
+  object-position: center 25%;
+  display: block;
+  filter: contrast(1.06);
+  transition: transform 0.7s var(--ease-cinematic), filter 0.5s ease;
+}
+
+.contact-portrait-frame:hover .contact-full-portrait-img {
+  transform: scale(1.03);
+  filter: contrast(1.12);
+}
+
+.contact-outside-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.contact-social-btn {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.2rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 0.06em;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.contact-social-btn.linkedin:hover {
+  background: #0077B5;
+  border-color: #0077B5;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 119, 181, 0.35);
+}
+
+.contact-social-btn.behance:hover {
+  background: #053EFF;
+  border-color: #053EFF;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(5, 62, 255, 0.35);
 }
 
 .copy-toast {

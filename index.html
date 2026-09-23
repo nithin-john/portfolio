@@ -32,7 +32,7 @@
 <body>
 
   <!-- Preloader (Juan Mora inspired minimal brand intro) -->
-  <div class="container-loader" style="position: fixed; inset: 0; background: #050508; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease-cinematic);">
+  <div class="container-loader" style="position: fixed; inset: 0; background: #050508; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.6s var(--ease-cinematic);">
     <div style="display: flex; align-items: center; gap: 0.8rem; font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700; letter-spacing: -0.02em;">
       <span>NITHIN</span>
       <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--spider-red); box-shadow: 0 0 15px var(--spider-red);"></span>
@@ -43,6 +43,9 @@
     </div>
     <div style="width: 160px; height: 2px; background: rgba(255, 255, 255, 0.1); border-radius: 999px; margin-top: 1.5rem; overflow: hidden; position: relative;">
       <div style="width: 100%; height: 100%; background: linear-gradient(90deg, var(--spider-red), var(--spider-cyan)); animation: preloaderBar 1.2s ease-in-out infinite;"></div>
+    </div>
+    <div style="margin-top: 1.8rem; padding: 0.65rem 1.6rem; border-radius: 999px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(0, 210, 255, 0.4); font-family: var(--font-mono); font-size: 0.75rem; color: #FFFFFF; letter-spacing: 0.14em; display: flex; align-items: center; gap: 0.6rem; box-shadow: 0 0 25px rgba(0, 210, 255, 0.25); transition: transform 0.2s ease;">
+      <span style="color: var(--spider-cyan);">✦</span> CLICK ANYWHERE TO ENTER <span style="color: var(--spider-red);">✦</span>
     </div>
   </div>
   <style>
@@ -213,11 +216,21 @@
             <div class="corner-crosshair crosshair-bl"></div>
             <div class="corner-crosshair crosshair-br"></div>
 
-            <div class="portrait-frame">
-              <img src="assets/images/nithin-portrait.jpg" alt="Nithin Johnson - Senior Creative Designer" class="portrait-image" loading="lazy">
+            <div class="portrait-frame" id="about-portrait-frame">
+              <img src="assets/images/nithin-portrait.jpg" alt="Nithin Johnson - Studio Poster" class="portrait-image portrait-view-poster active" id="portrait-img-poster" loading="lazy">
+              <img src="assets/images/nithin-profile-vision.jpg" alt="Nithin Johnson - Editorial Vision" class="portrait-image portrait-view-vision" id="portrait-img-vision" loading="lazy">
+              <img src="assets/images/nithin-spiderman-suit.jpg" alt="Nithin Johnson - Friendly Neighborhood Designer" class="portrait-image portrait-view-suit" id="portrait-img-suit" loading="lazy">
+              
+              <!-- Automatic 10-Second Slider Indicators -->
+              <div class="portrait-slide-indicators" aria-hidden="true" title="Auto-switches every 10 seconds">
+                <span class="portrait-slide-dot active"></span>
+                <span class="portrait-slide-dot"></span>
+                <span class="portrait-slide-dot"></span>
+              </div>
+
               <div class="portrait-caption">
                 <div class="portrait-name">NITHIN JOHNSON</div>
-                <div class="portrait-role">SENIOR CREATIVE DESIGNER &middot; UI/UX</div>
+                <div class="portrait-role" id="portrait-role-text">SENIOR CREATIVE DESIGNER &middot; UI/UX</div>
               </div>
             </div>
           </div>
@@ -449,26 +462,21 @@
             </div>
           </div>
 
-          <!-- Quick Connect & Socials -->
-          <div style="display: flex; flex-direction: column; justify-content: space-between; padding: 2rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 20px;">
-            <div>
-              <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--spider-cyan); text-transform: uppercase; margin-bottom: 0.5rem;">
-                PROFESSIONAL PLATFORMS
-              </div>
-              <h3 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 1rem;">
-                Connect on LinkedIn &amp; Behance
-              </h3>
-              <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
-                Feel free to connect directly for senior creative roles, product design advisory, design systems consulting, or speaking engagements.
-              </p>
+          <!-- Right Column: Full-Visibility Portrait & Outside Action Buttons -->
+          <div class="contact-portrait-column">
+            <div class="contact-portrait-frame">
+              <img src="assets/images/nithin-contact-outdoor.jpg" alt="Nithin Johnson - Senior Creative Designer" class="contact-full-portrait-img" loading="lazy">
             </div>
 
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-              <a href="https://linkedin.com/in/nithin_john" target="_blank" rel="noopener noreferrer" class="header-action-btn" style="flex: 1; text-align: center;">
-                LINKEDIN PROFILE &rarr;
+            <!-- Action buttons placed outside the image -->
+            <div class="contact-outside-buttons">
+              <a href="https://behance.net/nithinjohn9" target="_blank" rel="noopener noreferrer" class="contact-social-btn behance" title="View Behance Portfolio">
+                <span>BEHANCE PORTFOLIO</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
               </a>
-              <a href="https://behance.net/nithinjohn9" target="_blank" rel="noopener noreferrer" class="header-action-btn" style="flex: 1; text-align: center; border-color: var(--spider-cyan);">
-                BEHANCE PORTFOLIO &rarr;
+              <a href="https://linkedin.com/in/nithin_john" target="_blank" rel="noopener noreferrer" class="contact-social-btn linkedin" title="Connect on LinkedIn">
+                <span>LINKEDIN PROFILE</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
               </a>
             </div>
           </div>
@@ -514,8 +522,11 @@
     ✓ EMAIL COPIED TO CLIPBOARD
   </div>
 
-  <!-- Modern Spider-Man Background Theme Audio -->
-  <audio id="spiderman-theme-audio" src="assets/audio/spiderman-theme.mp3" loop preload="auto"></audio>
+  <!-- Modern Spider-Man Background Theme Audio (Trimmed: Starts immediately at heroic fanfare) -->
+  <audio id="spiderman-theme-audio" src="assets/audio/spiderman-theme.mp3" autoplay loop preload="auto">
+    <source src="assets/audio/spiderman-theme.mp3" type="audio/mpeg">
+    <source src="assets/audio/spiderman-theme.m4a" type="audio/mp4">
+  </audio>
 
   <!-- Dynamic Year Script -->
   <script>

@@ -284,20 +284,24 @@ export class SpidermanSwinger {
     const now = performance.now();
     const vel = Math.abs(this.scrollVelocity);
 
-    if (this.lastAnchorIndex !== -1 && anchorIdx !== this.lastAnchorIndex && vel > 1.2) {
-      if (now - this.lastSwingSoundTime > 360) {
+    if (this.lastAnchorIndex === -1) {
+      this.lastAnchorIndex = anchorIdx;
+    }
+
+    if (anchorIdx !== this.lastAnchorIndex && vel > 0.4) {
+      if (now - this.lastSwingSoundTime > 300) {
         if (window.soundEffectsInstance) {
           window.soundEffectsInstance.playWebSwing(vel);
         }
         this.lastSwingSoundTime = now;
       }
-    } else if (vel > 8 && (now - this.lastSwingSoundTime > 520)) {
+      this.lastAnchorIndex = anchorIdx;
+    } else if (vel > 6 && (now - this.lastSwingSoundTime > 420)) {
       if (window.soundEffectsInstance) {
         window.soundEffectsInstance.playWebSwing(vel);
       }
       this.lastSwingSoundTime = now;
     }
-    this.lastAnchorIndex = anchorIdx;
 
     // Smooth Lerp Damping towards trajectory
     this.currentX += (traj.x - this.currentX) * 0.12;

@@ -35,10 +35,11 @@ class App {
     this.scrollController = new ScrollController();
     this.spidermanSwinger = new SpidermanSwinger('spiderman-swinger-root');
 
-    // 3. Setup General Interactivity (Clipboard, Mobile Drawer, Preloader)
+    // 3. Setup General Interactivity (Clipboard, Mobile Drawer, Preloader, Automatic Portrait Slider)
     this.setupMobileMenu();
     this.setupClipboard();
     this.handlePreloader();
+    this.setupPortraitSlider();
   }
 
   mountPersonalData() {
@@ -253,27 +254,77 @@ class App {
     }
   }
 
+  setupPortraitSlider() {
+    const posterImg = document.getElementById('portrait-img-poster');
+    const visionImg = document.getElementById('portrait-img-vision');
+    const suitImg = document.getElementById('portrait-img-suit');
+    const dots = document.querySelectorAll('.portrait-slide-dot');
+    const roleText = document.getElementById('portrait-role-text');
+
+    if (!posterImg || !visionImg) return;
+
+    const images = [posterImg, visionImg];
+    if (suitImg) images.push(suitImg);
+
+    const roles = [
+      'SENIOR CREATIVE DESIGNER · UI/UX',
+      'VISION & EDITORIAL PERSPECTIVE',
+      'FRIENDLY NEIGHBORHOOD CREATIVE DESIGNER'
+    ];
+    let currentIndex = 0;
+
+    const switchSlide = (nextIndex) => {
+      images[currentIndex].classList.remove('active');
+      if (dots[currentIndex]) dots[currentIndex].classList.remove('active');
+
+      currentIndex = nextIndex;
+
+      images[currentIndex].classList.add('active');
+      if (dots[currentIndex]) dots[currentIndex].classList.add('active');
+      if (roleText) roleText.textContent = roles[currentIndex] || roles[0];
+    };
+
+    // Automatic switch every 10 seconds (10000ms) with zero manual interaction needed
+    this.portraitSliderInterval = setInterval(() => {
+      const nextIdx = (currentIndex + 1) % images.length;
+      switchSlide(nextIdx);
+    }, 10000);
+  }
+
   handlePreloader() {
     const preloader = document.querySelector('.container-loader');
-    if (preloader) {
-      preloader.addEventListener('click', () => {
-        if (this.soundEffects) {
-          this.soundEffects.startTheme();
-        }
-        preloader.style.opacity = '0';
-        preloader.style.pointerEvents = 'none';
-        setTimeout(() => preloader.remove(), 400);
-      });
+    if (!preloader) return;
 
-      setTimeout(() => {
-        if (this.soundEffects) {
-          this.soundEffects.startTheme();
-        }
-        preloader.style.opacity = '0';
-        preloader.style.pointerEvents = 'none';
-        setTimeout(() => preloader.remove(), 600);
-      }, 900);
+    let dismissed = false;
+    const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
+
+      // Start theme audio directly in response to visitor gesture
+      if (this.soundEffects) {
+        this.soundEffects.startTheme();
+      }
+
+      preloader.style.opacity = '0';
+      preloader.style.pointerEvents = 'none';
+      setTimeout(() => preloader.remove(), 500);
+    };
+
+    // User clicks, taps, or presses any key to enter
+    preloader.addEventListener('click', dismiss);
+    preloader.addEventListener('pointerdown', dismiss);
+    preloader.addEventListener('touchstart', dismiss, { passive: true });
+    window.addEventListener('keydown', dismiss, { once: true });
+
+    // If browser permits background audio on load, dismiss after brief reveal:
+    if (this.soundEffects && this.soundEffects.themeAudio) {
+      this.soundEffects.themeAudio.addEventListener('playing', () => {
+        setTimeout(dismiss, 700);
+      }, { once: true });
     }
+
+    // Graceful fallback auto-dismiss after 3.2s
+    setTimeout(dismiss, 3200);
   }
 }
 
