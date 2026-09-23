@@ -132,6 +132,29 @@
 
 /* Mobile Devices Breakpoints */
 @media (max-width: 768px) {
+  /* Remove Mini Spider-Man & Swing Effects on Mobile */
+  #spiderman-swinger-root,
+  .spidey-fullscreen-stage,
+  .spidey-full-svg,
+  #spidey-avatar,
+  .spidey-hover-pill {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Remove "7 YRS EXP · AVAILABLE" badge on Mobile Header */
+  .brand-status-pill {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Remove "LET'S TALK" button on Mobile Header */
+  .site-header .header-action-btn {
+    display: none !important;
+  }
+
   /* Disable Custom Cursor on Mobile */
   .custom-cursor {
     display: none !important;

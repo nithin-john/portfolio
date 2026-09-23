@@ -168,8 +168,15 @@
 }
 
 @media (max-width: 768px) {
-  #spidey-avatar {
-    transform: scale(0.8);
+  #spiderman-swinger-root,
+  .spidey-fullscreen-stage,
+  .spidey-full-svg,
+  #spidey-avatar,
+  .spidey-hover-pill {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 }
 

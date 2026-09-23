@@ -29,6 +29,10 @@ export class SpidermanSwinger {
     this.isFlipping = false;
     this.flipRotation = 0;
 
+    // Audio tracking
+    this.lastAnchorIndex = -1;
+    this.lastSwingSoundTime = 0;
+
     // Web Anchor Points spanning across the screen
     this.updateAnchorPoints();
 
@@ -48,6 +52,14 @@ export class SpidermanSwinger {
   }
 
   init() {
+    // Completely disable on mobile screens
+    if (window.innerWidth <= 768) {
+      if (this.container) {
+        this.container.style.display = 'none';
+        this.container.innerHTML = '';
+      }
+      return;
+    }
     this.renderMarkup();
     this.cacheElements();
     this.bindEvents();
@@ -147,11 +159,29 @@ export class SpidermanSwinger {
 
   bindEvents() {
     window.addEventListener('resize', () => {
+      if (window.innerWidth <= 768) {
+        if (this.container) {
+          this.container.style.display = 'none';
+          this.container.innerHTML = '';
+          this.avatar = null;
+        }
+        return;
+      }
+      if (this.container) {
+        this.container.style.display = 'block';
+        if (!this.avatar) {
+          this.renderMarkup();
+          this.cacheElements();
+          this.bindAvatarEvents();
+          this.animate();
+        }
+      }
       this.updateAnchorPoints();
       this.maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     });
 
     window.addEventListener('scroll', () => {
+      if (window.innerWidth <= 768) return;
       const currentY = window.scrollY;
       const delta = currentY - this.lastScrollY;
       this.scrollVelocity = delta;
@@ -159,27 +189,34 @@ export class SpidermanSwinger {
       this.scrollY = currentY;
     }, { passive: true });
 
-    // Interactive Click to do a 360-degree acrobatic spin
-    if (this.avatar) {
-      this.avatar.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.triggerFlip();
-      });
+    this.bindAvatarEvents();
+  }
 
-      this.avatar.addEventListener('mouseenter', () => {
-        if (this.tooltip) this.tooltip.classList.add('visible');
-      });
+  bindAvatarEvents() {
+    if (!this.avatar) return;
+    this.avatar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.triggerFlip();
+    });
 
-      this.avatar.addEventListener('mouseleave', () => {
-        if (this.tooltip) this.tooltip.classList.remove('visible');
-      });
-    }
+    this.avatar.addEventListener('mouseenter', () => {
+      if (this.tooltip) this.tooltip.classList.add('visible');
+    });
+
+    this.avatar.addEventListener('mouseleave', () => {
+      if (this.tooltip) this.tooltip.classList.remove('visible');
+    });
   }
 
   triggerFlip() {
     if (this.isFlipping) return;
     this.isFlipping = true;
     this.flipRotation = 0;
+
+    // Trigger acrobatic 360 spin sound
+    if (window.soundEffectsInstance) {
+      window.soundEffectsInstance.playFlipSound();
+    }
 
     if (this.senseAlert) {
       this.senseAlert.style.opacity = '1';
@@ -233,12 +270,34 @@ export class SpidermanSwinger {
   }
 
   animate() {
+    if (window.innerWidth <= 768) return;
+
     this.time += 0.025;
     this.maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     const scrollProgress = Math.min(1, Math.max(0, this.scrollY / this.maxScroll));
 
     // Calculate current trajectory point across the screen
     const traj = this.calculateTrajectory(scrollProgress);
+
+    // Audio Trigger on Anchor Switch or Significant Swing Arc
+    const anchorIdx = Math.floor(scrollProgress * this.anchors.length) % this.anchors.length;
+    const now = performance.now();
+    const vel = Math.abs(this.scrollVelocity);
+
+    if (this.lastAnchorIndex !== -1 && anchorIdx !== this.lastAnchorIndex && vel > 1.2) {
+      if (now - this.lastSwingSoundTime > 360) {
+        if (window.soundEffectsInstance) {
+          window.soundEffectsInstance.playWebSwing(vel);
+        }
+        this.lastSwingSoundTime = now;
+      }
+    } else if (vel > 8 && (now - this.lastSwingSoundTime > 520)) {
+      if (window.soundEffectsInstance) {
+        window.soundEffectsInstance.playWebSwing(vel);
+      }
+      this.lastSwingSoundTime = now;
+    }
+    this.lastAnchorIndex = anchorIdx;
 
     // Smooth Lerp Damping towards trajectory
     this.currentX += (traj.x - this.currentX) * 0.12;

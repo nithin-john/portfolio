@@ -28,6 +28,9 @@ export class ScrollController {
         infinite: false
       });
 
+      // Expose globally so modals and drawers can control background scroll
+      window.lenisInstance = this.lenis;
+
       const raf = (time) => {
         this.lenis.raf(time);
         requestAnimationFrame(raf);

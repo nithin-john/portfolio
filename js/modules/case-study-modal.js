@@ -33,6 +33,17 @@ export class CaseStudyModal {
       }
     });
 
+    // Ensure drawer prevents Lenis hijacking
+    if (this.drawer) {
+      this.drawer.setAttribute('data-lenis-prevent', 'true');
+      this.drawer.addEventListener('wheel', (e) => {
+        e.stopPropagation();
+      }, { passive: true });
+    }
+    if (this.backdrop) {
+      this.backdrop.setAttribute('data-lenis-prevent', 'true');
+    }
+
     // Event delegation on document for all project cards
     document.addEventListener('click', (e) => {
       const card = e.target.closest('.project-card');
@@ -49,11 +60,28 @@ export class CaseStudyModal {
     this.renderContent(project);
     this.backdrop.classList.add('open');
     document.body.style.overflow = 'hidden'; // Lock background scroll
+    document.documentElement.style.overflow = 'hidden';
+
+    // Stop Lenis from scrolling the background landing page
+    if (window.lenisInstance) {
+      window.lenisInstance.stop();
+    }
+
+    // Reset drawer scroll to the very top so visitor starts at overview
+    if (this.drawer) {
+      this.drawer.scrollTop = 0;
+    }
   }
 
   close() {
     this.backdrop.classList.remove('open');
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+
+    // Resume Lenis background scrolling
+    if (window.lenisInstance) {
+      window.lenisInstance.start();
+    }
   }
 
   renderContent(project) {

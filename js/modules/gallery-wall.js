@@ -426,12 +426,20 @@ export class GalleryWall {
     this.updateLightboxContent();
     this.lightboxEl.classList.add('open');
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    if (window.lenisInstance) {
+      window.lenisInstance.stop();
+    }
   }
 
   closeLightbox() {
     this.lightboxEl.classList.remove('open');
     this.resetZoom();
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    if (window.lenisInstance) {
+      window.lenisInstance.start();
+    }
   }
 
   prev() {

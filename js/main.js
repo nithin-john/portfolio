@@ -256,7 +256,19 @@ class App {
   handlePreloader() {
     const preloader = document.querySelector('.container-loader');
     if (preloader) {
+      preloader.addEventListener('click', () => {
+        if (this.soundEffects) {
+          this.soundEffects.startTheme();
+        }
+        preloader.style.opacity = '0';
+        preloader.style.pointerEvents = 'none';
+        setTimeout(() => preloader.remove(), 400);
+      });
+
       setTimeout(() => {
+        if (this.soundEffects) {
+          this.soundEffects.startTheme();
+        }
         preloader.style.opacity = '0';
         preloader.style.pointerEvents = 'none';
         setTimeout(() => preloader.remove(), 600);
